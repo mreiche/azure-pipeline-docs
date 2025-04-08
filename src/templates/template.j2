@@ -2,7 +2,14 @@
 
 {% if spec.doc.stages %}
 ## Workflow
-{% include 'pipeline.j2' %}
+{% include 'stages.j2' %}
+{% endif %}
+
+{% if spec.doc.jobs %}
+## Workflow
+{% with jobs=spec.doc.jobs, level=0 %}
+{% include 'jobs.j2' %}
+{% endwith %}
 {% endif %}
 
 ## Usage
