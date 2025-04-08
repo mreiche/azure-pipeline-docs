@@ -1,41 +1,20 @@
 from dataclasses import dataclass
-from typing import TypedDict, Literal, TypeVar, Generic
+from typing import TypeVar, Generic
 
-type Types = Literal["string"]
+class Condition:
+    def __init__(self, expression: str, items: list):
+        #self.__expression = expression.lstrip("${{").rstrip("}}").strip()
+        self.__expression = expression
+        self.__items = items
 
-type Variables = dict[str, any]
-T = TypeVar('T')
+    @property
+    def expression(self):
+        return self.__expression
 
-class Parameter(TypedDict, total=False):
-    name: str
-    default: str
-    type: Types
+    @property
+    def items(self):
+        return self.__items
 
-@dataclass
-class Condition(Generic[T]):
-    expression: str
-    items: list[T]
-
-class Step(TypedDict, total=False):
-    clean: bool
-    template: str
-    parameters: Variables
-    bash: str
-    checkout: str
-    fetchTags: bool
-    fetchDepth: int
-
-class Job(TypedDict, total=False):
-    job: str
-    displayName: str
-    variables: Variables
-    steps: list[Step|Condition[Step]]
-
-class Stage(TypedDict, total=False):
-    stage: str
-    jobs: list[Job|Condition[Job]]
-    dependsOn: list[str]
-
-class Pipeline(TypedDict, total=False):
-    parameters: list[Parameter]
-    stages: list[Stage|Condition[Stage]]
+    @items.setter
+    def items(self, items: list):
+        self.__items = items

@@ -8,8 +8,8 @@ from ruamel import yaml
 
 from src.models import Condition
 
-output_dir = os.getenv("OUTPUT_DIR", "out")
-template_file = os.getenv("TEMPLATE_PATH", "template.j2.md")
+output_dir = Path(os.getenv("OUTPUT_DIR", "out"))
+template_file = Path(os.getenv("TEMPLATE_PATH", "templates/template.j2.md"))
 os.makedirs(output_dir, exist_ok=True)
 
 T = TypeVar("T")
@@ -107,15 +107,18 @@ class Template:
         self.__parameters = parameters
 
     @property
-    def doc(self):
-        return self.__spec.doc
+    def spec(self):
+        return self.__spec
 
 
 def read_files(input_args: list[str]):
+    template_loader = jinja2.FileSystemLoader(searchpath=template_file.parent)
+    template_env = jinja2.Environment(loader=template_loader)
+    jinja_template = template_env.get_template(template_file.name)
 
-    with open(template_file, "r") as file:
-        template_code = file.read()
-        jinja_template = jinja2.Template(template_code)
+    # with open(template_file, "r") as file:
+    #     template_code = file.read()
+    #     jinja_template = jinja2.Template(template_code)
 
     for input_arg in input_args:
         files = glob.glob(input_arg)
