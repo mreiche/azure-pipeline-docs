@@ -1,0 +1,17 @@
+# {{ spec.file.name }}
+
+{% if spec.doc.stages %}
+## Workflow
+{% include 'pipeline.j2' %}
+{% endif %}
+
+## Usage
+```yaml
+- template: {{ spec.file.name }}@templatesRepository
+  parameters: {}  # See below
+```
+
+{% if spec.doc.parameters %}
+## Parameters
+{% include 'parameters.j2' %}
+{% endif %}

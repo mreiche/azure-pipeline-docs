@@ -1,0 +1,5 @@
+{% for comment in comments %}
+{% if comment.__class__.__name__ == "CommentToken" %}
+{{- comment.value.lstrip('#') | trim -}}
+{% endif %}
+{% endfor %}

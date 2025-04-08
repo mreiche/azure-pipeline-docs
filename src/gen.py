@@ -9,7 +9,7 @@ from ruamel import yaml
 from src.models import Condition
 
 output_dir = Path(os.getenv("OUTPUT_DIR", "out"))
-template_file = Path(os.getenv("TEMPLATE_PATH", "templates/template.j2.md"))
+template_file = Path(os.getenv("TEMPLATE_PATH", "templates/template.j2"))
 os.makedirs(output_dir, exist_ok=True)
 
 T = TypeVar("T")
@@ -113,7 +113,11 @@ class Template:
 
 def read_files(input_args: list[str]):
     template_loader = jinja2.FileSystemLoader(searchpath=template_file.parent)
-    template_env = jinja2.Environment(loader=template_loader)
+    template_env = jinja2.Environment(
+        loader=template_loader,
+        trim_blocks=True,
+        lstrip_blocks=True
+    )
     jinja_template = template_env.get_template(template_file.name)
 
     # with open(template_file, "r") as file:
