@@ -35,7 +35,7 @@ def read_files(input_args: list[str]):
             try:
                 spec = Spec(input_file)
             except Exception as e:
-                LOGGER.error(f"Failed loading '{input_file}'")
+                LOGGER.error(f"Failed parsing '{input_file}'")
                 LOGGER.exception(e)
                 continue
 

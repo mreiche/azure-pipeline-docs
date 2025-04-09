@@ -1,5 +1,11 @@
+{% set comment_lines = [] %}
 {% for comment in comments %}
-{% if comment.__class__.__name__ == "CommentToken" %}
-{{- comment.value.lstrip('#') | trim -}}
+{% if comment is iterable %}
+    {% with comments=comment %}
+    {% include "comments.j2" %}
+    {% endwith %}
+{% elif comment.__class__.__name__ == "CommentToken" %}
+    {% set line = comment_lines.append(comment.value.lstrip('#').strip()) %}
 {% endif %}
 {% endfor %}
+{{ comment_lines | join("\\\n" if not inline else '') }}

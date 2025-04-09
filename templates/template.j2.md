@@ -1,5 +1,11 @@
 # {{ spec.file.name }}
 
+{% if spec.doc.ca.comment %}
+{% with comments=spec.doc.ca.comment %}
+{% include "comments.j2" %}
+{% endwith %}
+{% endif %}
+
 {% if spec.doc.stages %}
 ## Workflow
 {% with stages=spec.doc.stages, level = 0 %}

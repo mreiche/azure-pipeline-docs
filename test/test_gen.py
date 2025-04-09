@@ -5,10 +5,14 @@ import shutil
 
 __base_dir = Path(__file__).parent
 
+def clear_dir(dir: Path):
+    if dir.exists():
+        shutil.rmtree(dir)
+        assert dir.exists() == False
+
 def test_rendering():
     output_dir = __base_dir / "out"
-    shutil.rmtree(output_dir)
-    assert output_dir.exists() == False
+    clear_dir(output_dir)
 
     test_env = os.environ.copy()
     test_env["OUTPUT_DIR"] = str(output_dir)
@@ -21,6 +25,7 @@ def test_rendering():
     assert ret.returncode == 0
     with open(output_dir / "test-pipeline.md", "r") as file:
         file_content = file.read()
+        assert "Which does things" in file_content
         assert "## Workflow" in file_content
         assert "## Parameters" in file_content
         assert "## Usage" in file_content
@@ -28,8 +33,7 @@ def test_rendering():
 
 def test_rendering_with_custom_template():
     output_dir = __base_dir / "out2"
-    shutil.rmtree(output_dir)
-    assert output_dir.exists() == False
+    clear_dir(output_dir)
 
     test_env = os.environ.copy()
     test_env["OUTPUT_DIR"] = str(output_dir)

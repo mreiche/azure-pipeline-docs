@@ -1,3 +1,7 @@
+# This pipeline is a test pipeline
+# Which does things
+# And helps testing the generation of documentation
+
 parameters:
   - name: "repository"    # Name of the current VCS repository
     default: $(Build.Repository.Name)

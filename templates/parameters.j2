@@ -1,5 +1,5 @@
 | Name | Type | Description | Default |
 |------|------|-------------|---------|
 {% for param in spec.doc.parameters -%}
-| {{ param.name }} | `{{ param.type }}` | {% with comments=param.ca.items['name'] %}{% include "comments.j2" %}{% endwith %} | `{{ param.default }}` |
+| {{ param.name }} | `{{ param.type }}` | {% with comments=param.ca.items['name'], inline=true %}{% include "comments.j2" %}{% endwith %} | `{{ param.default }}` |
 {% endfor %}
