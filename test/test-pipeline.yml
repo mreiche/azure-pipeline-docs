@@ -1,0 +1,119 @@
+parameters:
+  - name: "repository"    # Name of the current VCS repository
+    default: $(Build.Repository.Name)
+    type: string
+  - name: "containerRegistry"  # Registry to push your image
+    default: "my-registry"
+    type: string
+  - name: "dockerFile"  # Path to the container file to build
+    type: string
+    default: "Dockerfile"
+  - name: "buildContext"  # Container build context relative to your repository
+    default: "."
+    type: string
+  - name: "buildArgs"  # Extra arguments to pass to the `docker build` step
+    default: {}
+    type: object
+  - name: "agentPool"
+    type: object
+    default:
+      vmImage: "Ubuntu-latest"
+  - name: "chartName"  # The name of the chart, MUST match the chart name of Chart.yml
+    type: string
+    default: $(Build.Repository.Name)
+  - name: "chartPath"  # Chart base path relative to your repository
+    type: string
+    default: $(Build.Repository.Name)
+  - name: "buildHelmDependencies"
+    default: "false"
+    type: boolean
+  - name: "imageTagUpdatePath" # Structure path to your image tag reference in values.yml
+    type: string
+    default: '.image.tag'
+  - name: "hasHelm"  # Repository also contains a helm chart
+    type: boolean
+    default: true
+  - name: buildScope
+    type: string
+    default: "SNAPSHOT"
+  - name: prereleaseScope
+    type: string
+    default: "NONE"
+  - name: buildVersionMetadata
+    type: string
+    default: "NONE"
+  - name: useSemanticVersion  # Force usage of semantic versioning
+    type: boolean
+    default: false
+
+stages:
+  - stage: Build
+    jobs:
+      - job: BuildDeploy
+        displayName: Build and push into repository
+        pool:
+          ${{ insert }}: ${{ parameters.agentPool }}
+        variables:
+          buildPlatform: "Any CPU"
+          buildConfiguration: "Release"
+          DOCKER_BUILDKIT: 1
+          buildVersion: $(version.BUILD_VERSION)
+        workspace:
+          clean: all
+        steps:
+          - checkout: self
+            clean: true
+            fetchTags: true
+            fetchDepth: 0
+
+          - bash: |
+              echo Using ${{ variables.buildVersion }}
+            displayName: Showing version to use
+
+          # SemVer: in case of tag builds only determine the version (= Tag name) and do not build and publish again
+          # The complete build and publish is done during the release itself from main / develop
+          - ${{ if or(eq(parameters.useSemanticVersion, false), and(not(startsWith(variables['Build.SourceBranch'], 'refs/tags/')), eq(parameters.useSemanticVersion, true))) }}:
+
+            - task: Docker@2
+              displayName: Build Docker Image
+              env:
+                SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+              inputs:
+                command: "build"
+                containerRegistry: ${{ parameters.containerRegistry }}
+                repository: ${{ parameters.repository }}
+                Dockerfile: ${{ parameters.dockerFile }}
+                buildContext: ${{ parameters.buildContext }}
+                # Only passed to the "build" step
+                ${{ if parameters.buildArgs }}:
+                  arguments: ${{ join(' ', parameters.buildArgs) }}
+                tags: |
+                  $(Build.BuildId)
+                  latest
+                  ${{ variables.buildVersion }}
+
+            - task: Docker@2
+              displayName: Push Docker Image
+              env:
+                SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+              inputs:
+                command: push
+                containerRegistry: ${{ parameters.containerRegistry }}
+                repository: ${{ parameters.repository }}
+                Dockerfile: ${{ parameters.dockerFile }}
+                buildContext: ${{ parameters.buildContext }}
+                tags: |
+                  $(Build.BuildId)
+                  latest
+                  ${{ variables.buildVersion }}    
+
+  - ${{ if eq(parameters.hasHelm, true) }}:
+    - stage: helm_push
+      condition: and(succeeded(), and(ne('${{ parameters.chartName }}', ''), ne('${{ parameters.chartPath }}', '')))
+      dependsOn: [ "Build" ]
+      variables:
+        - name: buildVersion
+          value: $[ stageDependencies.Build.BuildDeploy.outputs['version.BUILD_VERSION'] ]
+      jobs:
+        - job: Helm push
+          displayName: Build and push helm chart

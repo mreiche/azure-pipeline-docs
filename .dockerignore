@@ -1,0 +1,6 @@
+*
+
+!lib/*
+!templates/*
+!gen.py
+!requirements.txt

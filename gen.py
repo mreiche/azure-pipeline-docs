@@ -6,10 +6,10 @@ from pathlib import Path
 
 import jinja2
 
-from src.models import Spec
+from lib.models import Spec
 
 output_dir = Path(os.getenv("OUTPUT_DIR", "out"))
-template_file = Path(os.getenv("TEMPLATE_PATH", "templates/template.j2"))
+template_file = Path(os.getenv("TEMPLATE_FILE", "templates/template.j2"))
 os.makedirs(output_dir, exist_ok=True)
 
 LOGGER = logging.getLogger(__name__)
@@ -28,10 +28,6 @@ def read_files(input_args: list[str]):
         lstrip_blocks=True
     )
     jinja_template = template_env.get_template(template_file.name)
-
-    # with open(template_file, "r") as file:
-    #     template_code = file.read()
-    #     jinja_template = jinja2.Template(template_code)
 
     for input_arg in input_args:
         files = glob.glob(input_arg)
