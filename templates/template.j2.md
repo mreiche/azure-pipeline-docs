@@ -14,15 +14,22 @@
 {% endif %}
 
 {% if spec.doc.jobs %}
-## Workflow
+## Jobs
 {% with jobs=spec.doc.jobs, level=0 %}
 {% include 'jobs.j2' %}
 {% endwith %}
 {% endif %}
 
+{% if spec.doc.steps %}
+## Steps
+{% with steps=spec.doc.steps, level=0 %}
+{% include 'steps.j2' %}
+{% endwith %}
+{% endif %}
+
 ## Usage
 ```yaml
-- template: {{ spec.file.name }}@templatesRepository
+- template: {{ spec.file }}@templatesRepository
   parameters: {}  # See below
 ```
 
