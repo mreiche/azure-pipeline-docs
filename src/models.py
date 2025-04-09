@@ -27,8 +27,12 @@ class Spec:
 
     cache: dict[str, Self] = {}
 
-    def __init__(self, file: str):
-        self.__file = Path(file)
+    def __init__(self, file: str|Path, parent: Self = None):
+        if not isinstance(file, Path):
+            file = Path(file)
+
+        self.__file = file
+        self.__parent = parent
         self.__doc = self.__load()
 
     @property
@@ -38,6 +42,16 @@ class Spec:
     @property
     def doc(self):
         return self.__doc
+
+    @property
+    def parent(self) -> Self|None:
+        return self.__parent
+
+    def find_root(self) -> Self:
+        current = self
+        while current.parent is not None:
+            current = current.parent
+        return current
 
     def __load(self):
         doc = self.load_yaml(self.__file)
@@ -61,11 +75,17 @@ class Spec:
         return cond
 
     def load_template(self, obj: dict) -> Self:
-        template_path = str(self.__file.parent / obj["template"].lstrip("/"))
-        if template_path not in Spec.cache:
-            Spec.cache[template_path] = Spec(template_path)
+        cache_key = obj["template"]
+        if cache_key not in Spec.cache:
+            relative_template_path: str = obj["template"]
+            if relative_template_path.startswith("/"):
+                template_path = self.find_root().file.parent / relative_template_path.lstrip("/")
+            else:
+                template_path = self.file.parent / relative_template_path
 
-        template = Template(spec=Spec.cache[template_path])
+            Spec.cache[cache_key] = Spec(file=template_path, parent=self)
+
+        template = Template(spec=Spec.cache[cache_key])
         if "parameters" in obj:
             template.parameters = obj["parameters"]
 

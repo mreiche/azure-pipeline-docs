@@ -3,6 +3,12 @@
 {% with jobs=job.spec.doc.jobs, level=level %}
 {% include "jobs.j2" %}
 {% endwith %}
+{% elif 'Condition' in job.__class__.__name__ %}
+{{ '    ' * level }}1. {% with condition=job %}{% include "condition_id.j2" %}{% endwith %}
+
+{% with jobs=job.items, level=level+1 %}
+{% include "jobs.j2" %}
+{% endwith %}
 {% else %}
 {{ '    ' * level }}1. *Job*: {{ job.displayName if "displayName" in job else job.job }}
 {% endif %}

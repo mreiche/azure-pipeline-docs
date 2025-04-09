@@ -1,7 +1,8 @@
 
 {% for stage in spec.doc.stages -%}
     {%- if 'Condition' in stage.__class__.__name__ -%}
-1. *Condition*: `{{ stage.expression | replace("${{","") | replace("}}","") | trim }}`
+1. {% with condition=stage %}{% include "condition_id.j2" %}{% endwith %}
+
         {% for stage in stage.items %}
     1. *Stage*: {{ stage.stage }}
             {% with jobs=stage.jobs, level=2 %}
