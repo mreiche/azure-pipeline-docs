@@ -22,12 +22,13 @@ See `out/test-pipeline.md` for details.
 
 ### Environment variables
 ```shell
-TEMPLATE_FILE=""  # Optional: Path to the Jinja template file to use for rendering
+TEMPLATE_FILE="templates/template.j2.md"  # Optional: Path to the Jinja template file to use for rendering
+OUTPUT_DIR="out"                          # Optional: Output directory for the documentation files
 ```
 
-## Templating
+### Templating
 
-See the [templates folders](templates), how to render the documentation. 
+See the [templates folders](templates) for examples.
 
 ## Development and testing
 
@@ -39,3 +40,6 @@ Run the tests
 ```shell
 PYTHONPATH="." pytest test
 ```
+
+## Alternatives
+- Generate Markdown from Azure Pipelines via *mkdocs*: https://github.com/Wesztman/mkdocs-azure-pipelines
