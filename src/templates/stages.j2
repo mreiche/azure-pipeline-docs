@@ -1,18 +1,14 @@
+{% for stage in stages -%}
+{% if 'Condition' in stage.__class__.__name__ %}
+{{ '    ' * level }}1. {% with condition=stage %}{% include "condition_id.j2" %}{% endwith %}
 
-{% for stage in spec.doc.stages -%}
-    {%- if 'Condition' in stage.__class__.__name__ -%}
-1. {% with condition=stage %}{% include "condition_id.j2" %}{% endwith %}
-
-        {% for stage in stage.items %}
-    1. *Stage*: {{ stage.stage }}
-            {% with jobs=stage.jobs, level=2 %}
-            {% include "jobs.j2" %}
-            {% endwith %}
-        {% endfor %}
-    {% else -%}
-1. *Stage*: {{ stage.stage }}
-        {% with jobs=stage.jobs, level=1 %}
-        {% include "jobs.j2" %}
-        {% endwith %}
-    {% endif %}
+    {% with stages=stage.items, level=level+1 %}
+    {% include "stages.j2" %}
+    {% endwith %}
+{% else %}
+{{ '    ' * level }}1. *Stage*: {{ stage.stage }}
+    {% with jobs=stage.jobs, level=level+1 %}
+    {% include "jobs.j2" %}
+    {% endwith %}
+{% endif %}
 {% endfor %}
