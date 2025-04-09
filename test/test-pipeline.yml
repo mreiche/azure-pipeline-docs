@@ -52,6 +52,7 @@ parameters:
 
 stages:
   - stage: Build
+    displayName: Build Stage
     jobs:
       - job: BuildDeploy
         displayName: Build and push into repository

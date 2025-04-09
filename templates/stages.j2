@@ -6,7 +6,7 @@
     {% include "stages.j2" %}
     {% endwith %}
 {% else %}
-{{ '    ' * level }}1. *Stage*: {{ stage.stage }}
+{{ '    ' * level }}1. *Stage*: {{ stage.displayName if "displayName" in stage else stage.stage }}
     {% with jobs=stage.jobs, level=level+1 %}
     {% include "jobs.j2" %}
     {% endwith %}
