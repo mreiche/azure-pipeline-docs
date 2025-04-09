@@ -14,12 +14,12 @@ os.makedirs(output_dir, exist_ok=True)
 
 LOGGER = logging.getLogger(__name__)
 
-__cwd__ = Path(__file__)
+__base_dir = Path(__file__).parent
 
 def read_files(input_args: list[str]):
     search_pathes = [
         template_file.parent,
-        __cwd__ / "templates"
+        __base_dir / "templates"
     ]
     template_loader = jinja2.FileSystemLoader(searchpath=search_pathes)
     template_env = jinja2.Environment(
@@ -35,7 +35,8 @@ def read_files(input_args: list[str]):
             try:
                 spec = Spec(input_file)
             except Exception as e:
-                LOGGER.error(f"Failed loading '{input_file}': {e}")
+                LOGGER.error(f"Failed loading '{input_file}'")
+                LOGGER.exception(e)
                 continue
 
             target_file = Path(output_dir) / f"{spec.file.stem}.md"
@@ -43,6 +44,7 @@ def read_files(input_args: list[str]):
                 with open(target_file, "w") as output_file:
                     output_file.write(jinja_template.render(spec=spec))
             except Exception as e:
+                LOGGER.error(f"Failed rendering '{target_file}'")
                 LOGGER.exception(e)
 
 input_args = sys.argv

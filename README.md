@@ -22,8 +22,12 @@ azure-pipeline-docs:latest "$(pwd)/*.yml"
 
 ### Environment variables
 ```shell
-TEMPLATE_FILE=""  # Optional: Path to the template to use for rendering
+TEMPLATE_FILE=""  # Optional: Path to the Jinja template file to use for rendering
 ```
+
+## Templating
+
+See the [templates folders](templates), how to render the documentation. 
 
 ## Development and testing
 
