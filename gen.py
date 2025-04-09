@@ -9,7 +9,7 @@ import jinja2
 from lib.models import Spec
 
 output_dir = Path(os.getenv("OUTPUT_DIR", "out"))
-template_file = Path(os.getenv("TEMPLATE_FILE", "templates/template.j2"))
+template_file = Path(os.getenv("TEMPLATE_FILE", "templates/template.j2.md"))
 os.makedirs(output_dir, exist_ok=True)
 
 LOGGER = logging.getLogger(__name__)
@@ -39,7 +39,7 @@ def read_files(input_args: list[str]):
                 LOGGER.exception(e)
                 continue
 
-            target_file = Path(output_dir) / f"{spec.file.stem}.md"
+            target_file = Path(output_dir) / f"{spec.file.stem}{template_file.suffix}"
             try:
                 with open(target_file, "w") as output_file:
                     output_file.write(jinja_template.render(spec=spec))

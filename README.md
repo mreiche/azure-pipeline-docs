@@ -1,4 +1,4 @@
-# Azure Pipeline Docs
+# Azure Pipeline docs
 
 Generate documentation from *Azure Pipeline* files.
 
@@ -11,12 +11,12 @@ docker build -t azure-pipeline-docs:latest .
 
 And run
 ```shell
-docker run -d \
--p8198:8198 \
+docker run \
 -eOUTPUT_DIR="$(pwd)/out" \
 -v"$(pwd):$(pwd)" \
-azure-pipeline-docs:latest "$(pwd)/*.yml" 
+azure-pipeline-docs:latest "$(pwd)/test/test-pipeline.yml" 
 ```
+See `out/test-pipeline.md` for details.
 
 ## Usage
 

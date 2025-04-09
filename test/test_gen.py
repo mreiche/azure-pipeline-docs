@@ -1,12 +1,16 @@
 import subprocess
 from pathlib import Path
 import os
+import shutil
 
 __base_dir = Path(__file__).parent
 
 def test_rendering():
-    test_env = os.environ.copy()
     output_dir = __base_dir / "out"
+    shutil.rmtree(output_dir)
+    assert output_dir.exists() == False
+
+    test_env = os.environ.copy()
     test_env["OUTPUT_DIR"] = str(output_dir)
     ret = subprocess.run(
         ["python", __base_dir / "../gen.py", __base_dir / "test-pipeline.yml"],
@@ -23,10 +27,13 @@ def test_rendering():
 
 
 def test_rendering_with_custom_template():
-    test_env = os.environ.copy()
     output_dir = __base_dir / "out2"
+    shutil.rmtree(output_dir)
+    assert output_dir.exists() == False
+
+    test_env = os.environ.copy()
     test_env["OUTPUT_DIR"] = str(output_dir)
-    test_env["TEMPLATE_FILE"] = str(__base_dir / "templates/other-template.j2")
+    test_env["TEMPLATE_FILE"] = str(__base_dir / "templates/other-template.j2.md")
     ret = subprocess.run(
         ["python", __base_dir / "../gen.py", __base_dir / "test-pipeline.yml"],
         capture_output=True,
