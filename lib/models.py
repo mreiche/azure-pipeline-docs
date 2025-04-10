@@ -57,7 +57,7 @@ class Spec:
     @property
     def relative_path(self):
         if Spec.root_path:
-            return "/" / self.file.absolute().relative_to(Spec.root_path.absolute())
+            return self.file.absolute().relative_to(Spec.root_path.absolute())
         else:
             return self.file
 
