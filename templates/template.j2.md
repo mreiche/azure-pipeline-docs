@@ -29,7 +29,7 @@
 
 ## Usage
 ```yaml
-- template: {{ spec.file }}@templatesRepository
+- template: {{ spec.relative_path }}
   parameters: {}  # See below
 ```
 

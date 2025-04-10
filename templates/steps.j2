@@ -1,8 +1,8 @@
 {% for step in steps %}
 {% if 'Template' in step.__class__.__name__ %}
-{% with steps=step.spec.doc.steps, level=level %}
-{% include "steps.j2" %}
-{% endwith %}
+    {% with steps=step.spec.doc.steps, level=level %}
+    {% include "steps.j2" %}
+    {% endwith %}
 {% elif 'Condition' in step.__class__.__name__ %}
 {{ '    ' * level }}1. {% with condition=job %}{% include "condition_id.j2" %}{% endwith %}
 
@@ -10,6 +10,6 @@
 {% include "step.j2" %}
 {% endwith %}
 {% elif "displayName" in step %}
-{{ '    ' * level }}1. *Step*: {{ step.displayName }}
+{{ '    ' * level }}1. *Step*: {{ step.displayName | regex_replace('(\${{.+}})', '`\\1`') }}
 {% endif %}
 {% endfor %}

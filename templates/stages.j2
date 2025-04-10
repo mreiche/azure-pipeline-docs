@@ -1,12 +1,16 @@
 {% for stage in stages -%}
-{% if 'Condition' in stage.__class__.__name__ %}
+{% if 'Template' in stage.__class__.__name__ %}
+    {% with stages=stage.spec.doc.stages, level=level %}
+    {% include "stages.j2" %}
+    {% endwith %}
+{% elif 'Condition' in stage.__class__.__name__ %}
 {{ '    ' * level }}1. {% with condition=stage %}{% include "condition_id.j2" %}{% endwith %}
 
     {% with stages=stage.items, level=level+1 %}
     {% include "stages.j2" %}
     {% endwith %}
 {% else %}
-{{ '    ' * level }}1. *Stage*: {{ stage.displayName if "displayName" in stage else stage.stage }}
+{{ '    ' * level }}1. *Stage*: {{ (stage.displayName if "displayName" in stage else stage.stage) | regex_replace('(\${{.+}})', '`\\1`') }}
     {% with jobs=stage.jobs, level=level+1 %}
     {% include "jobs.j2" %}
     {% endwith %}

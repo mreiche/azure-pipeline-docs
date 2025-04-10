@@ -26,6 +26,7 @@ class Condition:
 class Spec:
 
     cache: dict[str, Self] = {}
+    root_path: Path = None
 
     def __init__(self, file: str|Path, parent: Self = None):
         if not isinstance(file, Path):
@@ -52,6 +53,13 @@ class Spec:
         while current.parent is not None:
             current = current.parent
         return current
+
+    @property
+    def relative_path(self):
+        if Spec.root_path:
+            return "/" / self.file.absolute().relative_to(Spec.root_path.absolute())
+        else:
+            return self.file
 
     def __load(self):
         doc = self.load_yaml(self.__file)

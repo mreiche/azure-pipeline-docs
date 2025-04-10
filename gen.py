@@ -1,24 +1,25 @@
 import glob
 import logging
 import os
+import re
 import sys
 from pathlib import Path
 
 import jinja2
+from is_empty import empty
 
 from lib.models import Spec
 
-output_dir = Path(os.getenv("OUTPUT_DIR", "out"))
-template_file = Path(os.getenv("TEMPLATE_FILE", "templates/template.j2.md"))
-os.makedirs(output_dir, exist_ok=True)
-
 LOGGER = logging.getLogger(__name__)
 
+__output_dir = Path(os.getenv("OUTPUT_DIR", "out"))
+__template_file = Path(os.getenv("TEMPLATE_FILE", "templates/template.j2.md"))
+__spec_root = os.getenv("SPEC_ROOT")
 __base_dir = Path(__file__).parent
 
-def read_files(input_args: list[str]):
+def setup_jina_env():
     search_pathes = [
-        template_file.parent,
+        __template_file.parent,
         __base_dir / "templates"
     ]
     template_loader = jinja2.FileSystemLoader(searchpath=search_pathes)
@@ -27,7 +28,22 @@ def read_files(input_args: list[str]):
         trim_blocks=True,
         lstrip_blocks=True
     )
-    jinja_template = template_env.get_template(template_file.name)
+    # Custom filter method
+    def regex_replace(s, find, replace):
+        return re.sub(find, replace, s)
+
+    template_env.filters['regex_replace'] = regex_replace
+    return template_env
+
+def read_files(input_args: list[str]):
+    jinja_env = setup_jina_env()
+    jinja_template = jinja_env.get_template(__template_file.name)
+    if not empty(__spec_root):
+        Spec.root_path = Path(__spec_root)
+        assert Spec.root_path.is_dir(), "SPEC_ROOT must be a directory"
+
+    output_dir = Path(__output_dir)
+    os.makedirs(__output_dir, exist_ok=True)
 
     for input_arg in input_args:
         files = glob.glob(input_arg)
@@ -39,7 +55,7 @@ def read_files(input_args: list[str]):
                 LOGGER.exception(e)
                 continue
 
-            target_file = Path(output_dir) / f"{spec.file.stem}{template_file.suffix}"
+            target_file = output_dir / f"{spec.file.stem}{__template_file.suffix}"
             try:
                 with open(target_file, "w") as output_file:
                     output_file.write(jinja_template.render(spec=spec))
