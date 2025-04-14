@@ -25,7 +25,7 @@ def test_rendering():
     assert ret.returncode == 0
     with open(output_dir / "test-pipeline.md", "r") as file:
         file_content = file.read()
-        assert "Which does things" in file_content
+        assert "This is an\ninline comment.\\" in file_content
         assert "## Workflow" in file_content
         assert "## Parameters" in file_content
         assert "## Usage" in file_content

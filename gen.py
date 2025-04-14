@@ -22,6 +22,9 @@ def setup_jina_env():
         __template_file.parent,
         __base_dir / "templates"
     ]
+    if Spec.root_path:
+        search_pathes.insert(0, Spec.root_path)
+
     template_loader = jinja2.FileSystemLoader(searchpath=search_pathes)
     template_env = jinja2.Environment(
         loader=template_loader,
@@ -36,11 +39,12 @@ def setup_jina_env():
     return template_env
 
 def read_files(input_args: list[str]):
-    jinja_env = setup_jina_env()
-    jinja_template = jinja_env.get_template(__template_file.name)
     if not empty(__spec_root):
         Spec.root_path = Path(__spec_root)
         assert Spec.root_path.is_dir(), "SPEC_ROOT must be a directory"
+
+    jinja_env = setup_jina_env()
+    jinja_template = jinja_env.get_template(__template_file.name)
 
     output_dir = Path(__output_dir)
     os.makedirs(__output_dir, exist_ok=True)

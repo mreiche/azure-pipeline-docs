@@ -8,4 +8,4 @@
     {% set line = comment_lines.append(comment.value.lstrip('#').strip()) %}
 {% endif %}
 {% endfor %}
-{{ comment_lines | join("\\\n" if not inline else '') }}
+{{ comment_lines | join("\n" if not inline else '') }}
