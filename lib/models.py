@@ -1,3 +1,4 @@
+import re
 from pathlib import Path
 from typing import Self
 
@@ -146,3 +147,6 @@ class Template:
     @property
     def spec(self):
         return self.__spec
+
+def regex_replace(s, find, replace):
+    return re.sub(find, replace, s)

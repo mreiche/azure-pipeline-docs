@@ -3,6 +3,10 @@
 # But this is a new line.
 #
 # And this is a paragraph
+# ```yaml
+# codeBlock:
+#     withIndents: true
+# ```
 
 parameters:
   - name: "repository"    # Name of the current VCS repository

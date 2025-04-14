@@ -1,14 +1,13 @@
 import glob
 import logging
 import os
-import re
 import sys
 from pathlib import Path
 
 import jinja2
 from is_empty import empty
 
-from lib.models import Spec
+from lib.models import Spec, regex_replace
 
 LOGGER = logging.getLogger(__name__)
 
@@ -31,10 +30,6 @@ def setup_jina_env():
         trim_blocks=True,
         lstrip_blocks=True
     )
-    # Custom filter method
-    def regex_replace(s, find, replace):
-        return re.sub(find, replace, s)
-
     template_env.filters['regex_replace'] = regex_replace
     return template_env
 

@@ -5,7 +5,8 @@
     {% include "comments.j2" %}
     {% endwith %}
 {% elif comment.__class__.__name__ == "CommentToken" %}
-    {% set line = comment_lines.append(comment.value.lstrip('#').strip()) %}
+    {% set stripped_line = comment.value.rstrip() | regex_replace("^# ?", "") %}
+    {% set line = comment_lines.append(stripped_line) %}
 {% endif %}
 {% endfor %}
 {{ comment_lines | join("\n" if not inline else '') }}
