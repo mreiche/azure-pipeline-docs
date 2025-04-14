@@ -16,6 +16,7 @@ def test_rendering():
 
     test_env = os.environ.copy()
     test_env["OUTPUT_DIR"] = str(output_dir)
+    test_env["SPEC_ROOT"] = str(__base_dir)
     ret = subprocess.run(
         ["python", __base_dir / "../gen.py", __base_dir / "test-pipeline.yml"],
         capture_output=True,

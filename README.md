@@ -42,5 +42,8 @@ Run the tests
 PYTHONPATH="." pytest test
 ```
 
+## Example file
+After running the test `test_gen.py`, you'll find example files of the [test-pipeline.yml](test/test-pipeline.yml) in `out/`. 
+
 ## Alternatives
 - Generate Markdown from Azure Pipelines via *mkdocs*: https://github.com/Wesztman/mkdocs-azure-pipelines
