@@ -29,7 +29,7 @@ def test_rendering():
         assert "This is an\ninline comment.\\" in file_content
         assert "## Workflow" in file_content
         assert "## Parameters" in file_content
-        assert "## Usage" in file_content
+        assert "## Other Usage" in file_content
 
 
 def test_rendering_with_custom_template():

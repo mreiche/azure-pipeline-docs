@@ -22,7 +22,7 @@ def setup_jina_env():
         __base_dir / "templates"
     ]
     if Spec.root_path:
-        search_pathes.insert(0, Spec.root_path)
+        search_pathes.insert(1, Spec.root_path)
 
     template_loader = jinja2.FileSystemLoader(searchpath=search_pathes)
     template_env = jinja2.Environment(

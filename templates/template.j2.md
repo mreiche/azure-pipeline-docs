@@ -27,11 +27,7 @@
 {% endwith %}
 {% endif %}
 
-## Usage
-```yaml
-- template: {{ spec.relative_path }}
-  parameters: {}  # See below
-```
+{% include 'usage.j2' %}
 
 {% if spec.doc.parameters %}
 ## Parameters
