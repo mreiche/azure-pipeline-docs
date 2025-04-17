@@ -95,7 +95,10 @@ class Spec:
         if cache_key not in Spec.cache:
             relative_template_path: str = obj["template"]
             if relative_template_path.startswith("/"):
-                template_path = self.find_root().file.parent / relative_template_path.lstrip("/")
+                root_path = Spec.root_path
+                if not root_path:
+                    root_path = self.find_root().file.parent
+                template_path = root_path / relative_template_path.lstrip("/")
             else:
                 template_path = self.file.parent / relative_template_path
 
