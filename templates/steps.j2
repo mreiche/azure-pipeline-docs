@@ -4,10 +4,10 @@
     {% include "steps.j2" %}
     {% endwith %}
 {% elif 'Condition' in step.__class__.__name__ %}
-{{ '    ' * level }}1. {% with condition=job %}{% include "condition_id.j2" %}{% endwith %}
+{{ '    ' * level }}1. {% with condition=step %}{% include "condition_id.j2" %}{% endwith %}
 
 {% with steps=step.items, level=level+1 %}
-{% include "step.j2" %}
+{% include "steps.j2" %}
 {% endwith %}
 {% elif "displayName" in step %}
 {{ '    ' * level }}1. *Step*: {{ step.displayName | regex_replace('(\${{.+}})', '`\\1`') }}
