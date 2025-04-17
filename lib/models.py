@@ -1,8 +1,10 @@
 import re
 from pathlib import Path
-from typing import Self
+from typing import Self, TypedDict, Iterator
 
+from is_empty import empty
 from ruamel import yaml
+from tinystream import Stream
 
 
 class Condition:
@@ -28,6 +30,7 @@ class Spec:
 
     cache: dict[str, Self] = {}
     root_path: Path = None
+    validate: bool = False
 
     def __init__(self, file: str|Path, parent: Self = None):
         if not isinstance(file, Path):
@@ -64,6 +67,10 @@ class Spec:
 
     def __load(self):
         doc = self.load_yaml(self.__file)
+
+        if "parameters" in doc:
+            doc["parameters"] = Parameters(doc["parameters"])
+
         if "stages" in doc:
             doc["stages"] = self.load_items(doc["stages"], ["jobs", "steps"])
 
@@ -96,7 +103,10 @@ class Spec:
 
         template = Template(spec=Spec.cache[cache_key])
         if "parameters" in obj:
-            template.parameters = obj["parameters"]
+            template.parameters = Parameters(obj["parameters"])
+
+        if Spec.validate:
+            template.validate()
 
         return template
 
@@ -131,22 +141,75 @@ class Spec:
             data = yml.load(file)
             return data
 
+class Parameter(TypedDict, total=False):
+    name: str
+    value: any
+    default: any
+    type: str
+
+class Parameters:
+    def __init__(self, parameters: dict|list):
+
+        def _parameter_mapper(item: tuple) -> Parameter:
+            return Parameter(name=item[0], value=item[1])
+
+        if isinstance(parameters, list):
+            self.__parameters: list[Parameter] = parameters
+        else:
+            self.__parameters: list[Parameter] = Stream.of_dict(parameters).map(_parameter_mapper).collect()
+
+    def __getitem(self, name: str):
+        return Stream(self.__parameters).filter_key_value("name", name).next()
+
+    def __getitem__(self, name: str) -> Parameter:
+        item = self.__getitem(name)
+        if item.absent:
+            raise AttributeError(f"Item '{name}' does not exists")
+        return item.get()
+
+    def __contains__(self, name: str):
+        return self.__getitem(name).present
+
+    def __iter__(self) -> Iterator[Parameter]:
+        return iter(self.__parameters)
+
+    def __len__(self):
+        return len(self.__parameters)
+
+
 class Template:
     def __init__(self, spec: Spec):
         self.__spec = spec
-        self.__parameters = None
+        self.__parameters: Parameters = None
 
     @property
-    def parameters(self) -> dict:
+    def parameters(self) -> Parameters:
         return self.__parameters
 
     @parameters.setter
-    def parameters(self, parameters: dict):
+    def parameters(self, parameters: dict|list|Parameters):
+        if not isinstance(parameters, Parameters):
+            parameters = Parameters(parameters)
         self.__parameters = parameters
 
     @property
     def spec(self):
         return self.__spec
+
+    def validate(self):
+        if self.__parameters \
+            and "parameters" in self.spec.doc \
+            and len(self.__parameters) > 0 \
+            and len(self.spec.doc["parameters"]) > 0:
+
+            unsupported_parameters: list[str] = []
+
+            for param in self.__parameters:
+                if param["name"] not in self.spec.doc["parameters"]:
+                    unsupported_parameters.append(param["name"])
+
+            if len(unsupported_parameters) > 0:
+                raise ValueError(f"Parameters not supported by template '{self.spec.file}': {unsupported_parameters}")
 
 def regex_replace(s, find, replace):
     return re.sub(find, replace, s)

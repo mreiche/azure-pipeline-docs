@@ -1,0 +1,7 @@
+parameters:
+  - name: "katze"
+    type: "string"
+    default: "Maus"
+
+jobs:
+- job: Build

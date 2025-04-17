@@ -3,6 +3,10 @@ from pathlib import Path
 import os
 import shutil
 
+import pytest
+
+from lib.models import Spec
+
 __base_dir = Path(__file__).parent
 
 def clear_dir(dir: Path):
@@ -30,6 +34,7 @@ def test_rendering():
         assert "## Workflow" in file_content
         assert "## Parameters" in file_content
         assert "## Other Usage" in file_content
+        assert "| repository | `string` | Name of the current VCS repository | `$(Build.Repository.Name)` |" in file_content
 
 
 def test_rendering_with_custom_template():
@@ -51,3 +56,8 @@ def test_rendering_with_custom_template():
         file_content = file.read()
         assert "This is a special template for testing custom templates" in file_content
         assert "## Workflow" in file_content
+
+def test_validate():
+    Spec.validate = True
+    with pytest.raises(expected_exception=ValueError, match="Parameters not supported by template.*\['affe'\]"):
+        Spec(__base_dir / "test-pipeline2.yml")

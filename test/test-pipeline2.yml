@@ -1,0 +1,7 @@
+stages:
+  - stage: TestStage
+    jobs:
+      - template: test-job-template.yml
+        parameters:
+          katze: "Kuh"
+          affe: "Maus"

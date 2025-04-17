@@ -38,6 +38,8 @@ def read_files(input_args: list[str]):
         Spec.root_path = Path(__spec_root)
         assert Spec.root_path.is_dir(), "SPEC_ROOT must be a directory"
 
+    Spec.validate = os.getenv("VALIDATE", "true").lower() in ["true", "yes", "1", "on"]
+
     jinja_env = setup_jina_env()
     jinja_template = jinja_env.get_template(__template_file.name)
 
