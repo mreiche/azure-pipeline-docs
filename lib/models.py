@@ -162,7 +162,11 @@ class Parameters:
             self.__parameters: list[Parameter] = Stream.of_dict(parameters).map(_parameter_mapper).collect()
 
     def __getitem(self, name: str):
-        return Stream(self.__parameters).filter_key_value("name", name).next()
+        lower_name = name.lower()
+        return (Stream(self.__parameters)
+                .filter_key("name")
+                .filter(lambda param: param["name"].lower() == lower_name)
+                .next())
 
     def __getitem__(self, name: str) -> Parameter:
         item = self.__getitem(name)

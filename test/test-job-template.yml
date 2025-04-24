@@ -1,5 +1,5 @@
 parameters:
-  - name: "katze"
+  - name: "Katze"
     type: "string"
     default: "Maus"
 
