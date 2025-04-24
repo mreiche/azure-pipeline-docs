@@ -2,14 +2,15 @@ import re
 from pathlib import Path
 from typing import Self, TypedDict, Iterator
 
-from is_empty import empty
 from ruamel import yaml
 from tinystream import Stream
 
+from lib.log import logging
+
+LOGGER = logging.getLogger(__name__)
 
 class Condition:
     def __init__(self, expression: str, items: list):
-        #self.__expression = expression.lstrip("${{").rstrip("}}").strip()
         self.__expression = expression
         self.__items = items
 
@@ -113,20 +114,39 @@ class Spec:
 
         return template
 
-    def load_items(self, items: list, hierarchy: list) -> list:
+    def __map_ids(self, items: list[dict]):
+        relevant_keys = ["displayName", "stage", "job", "template", "task"]
+
+        item_num = 0
+        def __map(item: dict):
+            nonlocal item_num
+            for key in relevant_keys:
+                item_num += 1
+                if key in item:
+                    return item[key]
+            return f"item[{item_num}"
+
+        return list(map(__map, items))
+
+    def load_items(self, items: list[dict], hierarchy: list, path:list = None) -> list:
         i = 0
+        if not path:
+            path = []
         sub_hierarchy = hierarchy.copy()
-        this_level = sub_hierarchy.pop(0) if len(sub_hierarchy) > 0 else None
+        sub_level = sub_hierarchy.pop(0) if len(sub_hierarchy) > 0 else None
         for item in items:
+            if not item:
+                LOGGER.warning(f"Empty item found in {self.file} -> {' -> '.join(self.__map_ids(path))}")
+                continue
             if self.is_condition(item):
-                condition = self.wrap_condition(item)
-                items[i] = condition
-                condition.items = self.load_items(condition.items, hierarchy)
+                item = self.wrap_condition(item)
+                items[i] = item
+                item.items = self.load_items(item.items, hierarchy, path + [item])
             elif "template" in item:
                 item = self.load_template(item)
                 items[i] = item
-            elif this_level and this_level in item:
-                item[this_level] = self.load_items(item[this_level], sub_hierarchy)
+            elif sub_level and sub_level in item:
+                item[sub_level] = self.load_items(item[sub_level], sub_hierarchy, path + [item])
 
             i += 1
 
@@ -218,5 +238,5 @@ class Template:
             if len(unsupported_parameters) > 0:
                 raise ValueError(f"Parameters not supported by template '{self.spec.file}': {unsupported_parameters}")
 
-def regex_replace(s, find, replace):
-    return re.sub(find, replace, s)
+def regex_replace(given:str, find:str, replace:str):
+    return re.sub(str(find), str(replace), str(given))
