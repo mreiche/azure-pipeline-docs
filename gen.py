@@ -1,5 +1,5 @@
 import glob
-import logging
+from lib.log import logging
 import os
 import sys
 from pathlib import Path
@@ -9,12 +9,13 @@ from is_empty import empty
 
 from lib.models import Spec, regex_replace
 
-LOGGER = logging.getLogger(__name__)
+__file = Path(__file__)
+LOGGER = logging.getLogger(__file.name)
 
 __output_dir = Path(os.getenv("OUTPUT_DIR", "out"))
 __template_file = Path(os.getenv("TEMPLATE_FILE", "templates/template.j2.md"))
-__spec_root = os.getenv("SPEC_ROOT")
-__base_dir = Path(__file__).parent
+__spec_root = os.getenv("SPEC_ROOT", "").strip('\"')
+__base_dir = __file.parent
 
 def setup_jina_env():
     search_pathes = [
@@ -36,7 +37,7 @@ def setup_jina_env():
 def read_files(input_args: list[str]):
     if not empty(__spec_root):
         Spec.root_path = Path(__spec_root)
-        assert Spec.root_path.is_dir(), "SPEC_ROOT must be a directory"
+        assert Spec.root_path.is_dir(), f"SPEC_ROOT '{Spec.root_path.absolute()}' must be a directory"
 
     Spec.validate = os.getenv("VALIDATE", "true").lower() in ["true", "yes", "1", "on"]
 
@@ -44,7 +45,8 @@ def read_files(input_args: list[str]):
     jinja_template = jinja_env.get_template(__template_file.name)
 
     output_dir = Path(__output_dir)
-    os.makedirs(__output_dir, exist_ok=True)
+
+    generated = 0
 
     for input_arg in input_args:
         files = glob.glob(input_arg)
@@ -56,13 +58,22 @@ def read_files(input_args: list[str]):
                 LOGGER.exception(e)
                 continue
 
-            target_file = output_dir / f"{spec.file.stem}{__template_file.suffix}"
+            if Spec.root_path:
+                relative_output_dir = output_dir / spec.relative_path.parent
+            else:
+                relative_output_dir = output_dir
+
+            os.makedirs(relative_output_dir, exist_ok=True)
+            target_file = relative_output_dir / f"{spec.file.stem}{__template_file.suffix}"
             try:
                 with open(target_file, "w") as output_file:
                     output_file.write(jinja_template.render(spec=spec))
+                    generated += 1
             except Exception as e:
                 LOGGER.error(f"Failed rendering '{target_file}'")
                 LOGGER.exception(e)
+
+    LOGGER.info(f"{generated} files generated")
 
 input_args = sys.argv
 input_args.pop(0)

@@ -24,7 +24,7 @@ See `out/test-pipeline.md` for details.
 ```shell
 TEMPLATE_FILE=""  # Optional: Path to the Jinja template file to use for rendering (defaults to `templates/template.j2.md`)
 OUTPUT_DIR="out"  # Optional: Output directory for the rendering files
-SPEC_ROOT=""      # Optional: Path to the root directory of the input files (provides 'spec.relative_path' in templates)
+SPEC_ROOT=""      # Optional: Path to the root directory of the input files (provides 'spec.relative_path' in templates and keeps the directory structure of output files)
 VALIDATE="true"   # Optional: Performs some validation checks on the templates
 ```
 
