@@ -169,6 +169,7 @@ class Parameter(TypedDict, total=False):
     value: any
     default: any
     type: str
+    values: list[any]
 
 class Parameters:
     def __init__(self, parameters: dict|list):
@@ -180,6 +181,8 @@ class Parameters:
             self.__parameters: list[Parameter] = parameters
         else:
             self.__parameters: list[Parameter] = Stream.of_dict(parameters).map(_parameter_mapper).collect()
+
+        pass
 
     def __getitem(self, name: str):
         lower_name = name.lower()

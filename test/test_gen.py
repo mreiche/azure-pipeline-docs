@@ -4,6 +4,7 @@ import os
 import shutil
 
 import pytest
+from is_empty import empty
 
 from lib.models import Spec
 
@@ -28,13 +29,18 @@ def test_rendering():
         env=test_env
     )
     assert ret.returncode == 0
+    assert ret.stderr == "INFO:gen.py:1 files generated\n", ret.stderr
+
     with open(output_dir / "test-pipeline.md", "r") as file:
         file_content = file.read()
         assert "This is an\ninline comment.\\" in file_content
         assert "## Workflow" in file_content
         assert "## Parameters" in file_content
         assert "## Other Usage" in file_content
-        assert "| repository | `string` | Name of the current VCS repository | `$(Build.Repository.Name)` |" in file_content
+        assert "| paramWithValues | `hund`, `katze`, `kuh` |  | `None` |" in file_content
+        assert "| paramWithDisplayName | `None` | This parameter has a description | `None` |" in file_content
+        assert "| parameterWithDefault | `string` | This parameter has a default | `Any string` |" in file_content
+        assert "| objectParameter | `object` |  | `{'vmImage': 'Ubuntu-latest'}` |" in file_content
 
 
 def test_rendering_with_custom_template():
@@ -51,6 +57,7 @@ def test_rendering_with_custom_template():
         env=test_env
     )
     assert ret.returncode == 0
+    assert ret.stderr == "INFO:gen.py:1 files generated\n", ret.stderr
 
     with open(output_dir / "test-pipeline.md", "r") as file:
         file_content = file.read()
@@ -60,7 +67,7 @@ def test_rendering_with_custom_template():
 def test_validate():
     Spec.validate = True
     with pytest.raises(expected_exception=ValueError, match="Parameters not supported by template.*\['affe'\]"):
-        Spec(__base_dir / "test-pipeline2.yml")
+        Spec(__base_dir / "test-pipeline-fails-validate.yml")
 
 def test_rendering_structured():
     output_dir = __base_dir / "out"

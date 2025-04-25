@@ -9,52 +9,20 @@
 # ```
 
 parameters:
-  - name: "repository"    # Name of the current VCS repository
-    default: $(Build.Repository.Name)
+  - name: paramWithValues
+    values:
+      - hund
+      - katze
+      - kuh
+  - name: paramWithDisplayName
+    displayName: This parameter has a description
+  - name: "parameterWithDefault"  # This parameter has a default
+    default: "Any string"
     type: string
-  - name: "containerRegistry"  # Registry to push your image
-    default: "my-registry"
-    type: string
-  - name: "dockerFile"  # Path to the container file to build
-    type: string
-    default: "Dockerfile"
-  - name: "buildContext"  # Container build context relative to your repository
-    default: "."
-    type: string
-  - name: "buildArgs"  # Extra arguments to pass to the `docker build` step
-    default: {}
-    type: object
-  - name: "agentPool"
+  - name: "objectParameter"
     type: object
     default:
       vmImage: "Ubuntu-latest"
-  - name: "chartName"  # The name of the chart, MUST match the chart name of Chart.yml
-    type: string
-    default: $(Build.Repository.Name)
-  - name: "chartPath"  # Chart base path relative to your repository
-    type: string
-    default: $(Build.Repository.Name)
-  - name: "buildHelmDependencies"
-    default: "false"
-    type: boolean
-  - name: "imageTagUpdatePath" # Structure path to your image tag reference in values.yml
-    type: string
-    default: '.image.tag'
-  - name: "hasHelm"  # Repository also contains a helm chart
-    type: boolean
-    default: true
-  - name: buildScope
-    type: string
-    default: "SNAPSHOT"
-  - name: prereleaseScope
-    type: string
-    default: "NONE"
-  - name: buildVersionMetadata
-    type: string
-    default: "NONE"
-  - name: useSemanticVersion  # Force usage of semantic versioning
-    type: boolean
-    default: false
 
 stages:
   - stage: Build
