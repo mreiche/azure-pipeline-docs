@@ -4,21 +4,25 @@ env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
 
-paths: &paths
-  - .github/workflows/build.yml
-  - lib/**
-  - templates/**
-  - gen.py
-  - Dockerfile
-  - requirements.txt
-
 on:
   push:
     branches: [ "main" ]
-    paths: *paths
+    paths:
+      - .github/workflows/build.yml
+      - lib/**
+      - templates/**
+      - gen.py
+      - Dockerfile
+      - requirements.txt
   pull_request:
     branches: [ "main" ]
-    paths: *paths
+    paths:
+      - .github/workflows/build.yml
+      - lib/**
+      - templates/**
+      - gen.py
+      - Dockerfile
+      - requirements.txt
   workflow_dispatch:
 
 permissions:
