@@ -57,3 +57,6 @@ After running the test `test_gen.py`, you'll find example files of the [test-pip
 
 ## Alternatives
 - Generate Markdown from Azure Pipelines via *mkdocs*: https://github.com/Wesztman/mkdocs-azure-pipelines
+
+## References
+- https://docs.docker.com/build/ci/github-actions/multi-platform/
