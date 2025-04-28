@@ -47,7 +47,7 @@ jobs:
         env:
           PYTHONPATH: "."
         run: |
-          pytest test
+          pytest --junitxml=test-results/tests.xml test
       - name: Publish test results
         uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()

@@ -23,6 +23,7 @@ See `out/test-pipeline.md` for details.
 ### Environment variables
 ```shell
 TEMPLATE_FILE=""  # Optional: Path to the Jinja template file to use for rendering (defaults to `templates/template.j2.md`)
+TEMPLATES_DIR=""  # Optional: Additional path for template overrides
 OUTPUT_DIR="out"  # Optional: Output directory for the rendering files
 SPEC_ROOT=""      # Optional: Path to the root directory of the input files (provides 'spec.relative_path' in templates and keeps the directory structure of output files)
 VALIDATE="true"   # Optional: Performs some validation checks on the templates
@@ -30,7 +31,15 @@ VALIDATE="true"   # Optional: Performs some validation checks on the templates
 
 ### Templating
 
-See the [templates folders](templates) for examples.
+The templates are rendered via *Jinja2* and the output files are using the same file extension of the given template file.
+
+The search paths for templates are:
+- `TEMPLATES_DIR` if defined
+- `SPEC_ROOT` if defined
+- Parent directory of `TEMPLATE_FILE`
+- Distributed `templates/` directory
+
+You can use this search order to override snippets. See the [templates folders](templates) for examples.
 
 ## Development and testing
 

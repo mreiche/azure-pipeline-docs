@@ -14,18 +14,29 @@ LOGGER = logging.getLogger(__file.name)
 
 __output_dir = Path(os.getenv("OUTPUT_DIR", "out"))
 __template_file = Path(os.getenv("TEMPLATE_FILE", "templates/template.j2.md"))
+__templates_dir = os.getenv("TEMPLATES_DIR", "")
 __spec_root = os.getenv("SPEC_ROOT", "").strip('\"')
 __base_dir = __file.parent
 
 def setup_jina_env():
-    search_pathes = [
-        __template_file.parent,
-        __base_dir / "templates"
-    ]
-    if Spec.root_path:
-        search_pathes.insert(1, Spec.root_path)
 
-    template_loader = jinja2.FileSystemLoader(searchpath=search_pathes)
+    def _assert_path(path: Path):
+        assert path.exists(), f"{path} doesn't exist"
+
+    search_paths = []
+    if not empty(__templates_dir):
+        templates_path = Path(__templates_dir)
+        _assert_path(templates_path)
+        search_paths.append(templates_path)
+
+    if Spec.root_path:
+        _assert_path(Spec.root_path)
+        search_paths.append(Spec.root_path)
+
+    search_paths.append(__template_file.parent)
+    search_paths.append(__base_dir / "templates")
+
+    template_loader = jinja2.FileSystemLoader(searchpath=search_paths)
     template_env = jinja2.Environment(
         loader=template_loader,
         trim_blocks=True,

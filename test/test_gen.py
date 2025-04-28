@@ -22,6 +22,7 @@ def test_rendering():
     test_env = os.environ.copy()
     test_env["OUTPUT_DIR"] = str(output_dir)
     test_env["SPEC_ROOT"] = str(__base_dir)
+    test_env["TEMPLATES_DIR"] = str(__base_dir / "templates")
     ret = subprocess.run(
         ["python", __base_dir / "../gen.py", __base_dir / "test-pipeline.yml"],
         capture_output=True,
@@ -70,7 +71,7 @@ def test_validate():
         Spec(__base_dir / "test-pipeline-fails-validate.yml")
 
 def test_rendering_structured():
-    output_dir = __base_dir / "out"
+    output_dir = __base_dir / "out3"
     clear_dir(output_dir)
 
     test_env = os.environ.copy()
