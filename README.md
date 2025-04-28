@@ -3,18 +3,11 @@
 Generate documentation from *Azure Pipeline* files.
 
 ## Quick start
-
-Build the container
-```shell
-docker build -t azure-pipeline-docs:latest .
-```
-
-And run
 ```shell
 docker run \
 -eOUTPUT_DIR="$(pwd)/out" \
 -v"$(pwd):$(pwd)" \
-azure-pipeline-docs:latest "$(pwd)/test/test-pipeline.yml" 
+ghcr.io/mreiche/azure-pipeline-docs:main "$(pwd)/test/test-pipeline.yml" 
 ```
 See `out/test-pipeline.md` for details.
 
@@ -51,9 +44,6 @@ Run the tests
 ```shell
 PYTHONPATH="." pytest test
 ```
-
-## Example file
-After running the test `test_gen.py`, you'll find example files of the [test-pipeline.yml](test/test-pipeline.yml) in `out/`. 
 
 ## Alternatives
 - Generate Markdown from Azure Pipelines via *mkdocs*: https://github.com/Wesztman/mkdocs-azure-pipelines
