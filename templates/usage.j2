@@ -1,7 +1,7 @@
 ## Usage
 ```yaml
 - template: {{ spec.relative_path }}
-  {% set required_params = spec.doc.parameters | rejectattr("default") | list %}
+  {% set required_params = spec.doc.parameters | rejectattr("default", "is_defined") | list %}
   {% if required_params | length > 0 %}
   parameters:
     {% for param in required_params %}

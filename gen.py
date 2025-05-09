@@ -7,6 +7,7 @@ import jinja2
 from is_empty import empty
 from jinja2 import TemplateError
 
+from lib import models
 from lib.log import logging
 from lib.models import Spec, regex_replace
 
@@ -48,7 +49,9 @@ def setup_jina_env():
         trim_blocks=True,
         lstrip_blocks=True
     )
-    template_env.filters['regex_replace'] = regex_replace
+    template_env.filters['regex_replace'] = models.regex_replace
+    template_env.tests['is_not_defined'] = models.is_not_defined
+    template_env.tests['is_defined'] = models.is_defined
     return template_env
 
 def read_files(input_args: list[str]):

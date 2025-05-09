@@ -1,5 +1,8 @@
 from pathlib import Path
 
+import pytest
+
+from lib import models
 from lib.models import Spec, regex_replace, Parameters
 
 __cwd = Path(__file__).parent
@@ -37,3 +40,16 @@ def test_parameters_from_dict():
     parameters = Parameters(input)
     assert "my-param" in parameters
     assert parameters["my-param"]["value"] == "my-value"
+
+@pytest.mark.parametrize(
+    "input_val, expected",
+    [
+        (1, True),
+        (None, False),
+        (False, True),
+        ("", False),
+        ("NoNe", False)
+    ]
+)
+def test_defined(input_val:any, expected: bool):
+    assert models.is_defined(input_val) == expected
