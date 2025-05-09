@@ -1,5 +1,5 @@
 | Name | Type | Description | Default |
 |------|------|-------------|---------|
 {% for param in spec.doc.parameters -%}
-| {{ param.name }} | `{% if "values" in param %}{{ param['values'] | join("`, `") }}{% else %}{{ param.type | default("None") }}{% endif %}` | {% if "displayName" not in param %}{% with comments=param.ca.items['name'], inline=true %}{% include "comments.j2" %}{% endwith %}{% else %}{{ param.displayName }}{% endif %} | `{{ param.default | default("None") }}` |
+| {{ param.name }} | `{% if "values" in param %}{{ param['values'] | join("`, `") }}{% else %}{{ param.type | default("None") }}{% endif %}` | {% if "displayName" not in param and param.ca %}{% with comments=param.ca.items['name'], inline=true %}{% include "comments.j2" %}{% endwith %}{% else %}{{ param.displayName }}{% endif %} | `{{ param.default | default("None") }}` |
 {% endfor %}

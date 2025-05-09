@@ -1,2 +1,6 @@
+parameters:
+  - name: required
+    type: bool
+
 stages:
   - stage: StructureTest

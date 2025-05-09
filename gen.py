@@ -1,22 +1,28 @@
 import glob
-from lib.log import logging
 import os
 import sys
 from pathlib import Path
 
 import jinja2
 from is_empty import empty
+from jinja2 import TemplateError
 
+from lib.log import logging
 from lib.models import Spec, regex_replace
 
 __file = Path(__file__)
 LOGGER = logging.getLogger(__file.name)
 
 __output_dir = Path(os.getenv("OUTPUT_DIR", "out"))
-__template_file = Path(os.getenv("TEMPLATE_FILE", "templates/template.j2.md"))
+__template_file = os.getenv("TEMPLATE_FILE", "")
 __templates_dir = os.getenv("TEMPLATES_DIR", "")
 __spec_root = os.getenv("SPEC_ROOT", "").strip('\"')
 __base_dir = __file.parent
+
+if not empty(__template_file):
+    __template_file_path = Path(__template_file)
+else:
+    __template_file_path = __base_dir /  "templates/template.j2.md"
 
 def setup_jina_env():
 
@@ -33,7 +39,7 @@ def setup_jina_env():
         _assert_path(Spec.root_path)
         search_paths.append(Spec.root_path)
 
-    search_paths.append(__template_file.parent)
+    search_paths.append(__template_file_path.parent)
     search_paths.append(__base_dir / "templates")
 
     template_loader = jinja2.FileSystemLoader(searchpath=search_paths)
@@ -53,7 +59,7 @@ def read_files(input_args: list[str]):
     Spec.validate = os.getenv("VALIDATE", "true").lower() in ["true", "yes", "1", "on"]
 
     jinja_env = setup_jina_env()
-    jinja_template = jinja_env.get_template(__template_file.name)
+    jinja_template = jinja_env.get_template(__template_file_path.name)
 
     output_dir = Path(__output_dir)
 
@@ -75,13 +81,16 @@ def read_files(input_args: list[str]):
                 relative_output_dir = output_dir
 
             os.makedirs(relative_output_dir, exist_ok=True)
-            target_file = relative_output_dir / f"{spec.file.stem}{__template_file.suffix}"
+            target_file = relative_output_dir / f"{spec.file.stem}{__template_file_path.suffix}"
             try:
                 with open(target_file, "w") as output_file:
                     output_file.write(jinja_template.render(spec=spec))
                     generated += 1
-            except Exception as e:
+            except TemplateError as e:
                 LOGGER.error(f"Failed rendering '{target_file}'")
+                raise e
+            except Exception as e:
+                LOGGER.warning(f"Skipped rendering '{target_file}'")
                 LOGGER.exception(e)
 
     LOGGER.info(f"{generated} files generated")

@@ -84,4 +84,6 @@ def test_rendering_structured():
         env=test_env
     )
     assert ret.returncode == 0
-    assert Path(output_dir / "test-directory/test-pipeline3.md").is_file()
+    with open(output_dir / "test-directory/test-pipeline3.md", "r") as file:
+        file_content = file.read()
+        assert "required: bool" in file_content

@@ -1,5 +1,11 @@
 ## Usage
 ```yaml
 - template: {{ spec.relative_path }}
-  parameters: {}  # See below
+  {% set required_params = spec.doc.parameters | rejectattr("default") | list %}
+  {% if required_params | length > 0 %}
+  parameters:
+    {% for param in required_params %}
+    {{ param.name | indent(4) }}: {{ param.type }}
+    {% endfor %}
+  {% endif %}
 ```
