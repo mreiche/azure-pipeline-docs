@@ -244,11 +244,5 @@ class Template:
 def regex_replace(given:str, find:str, replace:str):
     return re.sub(str(find), str(replace), str(given))
 
-def is_not_defined(value):
-    return value is None or str(value).strip().lower() in ("none", )
-
-def is_defined(value):
-    return not is_not_defined(value)
-
 def has_default(item: dict):
-    return "default" in item and is_defined(item["default"])
+    return "default" in item

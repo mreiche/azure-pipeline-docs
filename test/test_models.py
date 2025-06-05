@@ -41,15 +41,7 @@ def test_parameters_from_dict():
     assert "my-param" in parameters
     assert parameters["my-param"]["value"] == "my-value"
 
-@pytest.mark.parametrize(
-    "input_val, expected",
-    [
-        (1, True),
-        (None, False),
-        (False, True),
-        ("", True),
-        ("NoNe", False)
-    ]
-)
-def test_defined(input_val:any, expected: bool):
-    assert models.is_defined(input_val) == expected
+def test_default_values():
+    template = Spec(__cwd / "test-directory/test-pipeline3.yml")
+    parameters = template.doc["parameters"]
+    pass

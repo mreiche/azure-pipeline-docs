@@ -87,5 +87,5 @@ def test_rendering_structured():
     with open(output_dir / "test-directory/test-pipeline3.md", "r") as file:
         file_content = file.read()
         assert "required: bool" in file_content
-        assert "defaultNone: string" in file_content
+        assert "defaultNone: string" not in file_content
         assert "emptyStringDefault: string" not in file_content

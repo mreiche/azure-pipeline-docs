@@ -50,8 +50,6 @@ def setup_jina_env():
         lstrip_blocks=True
     )
     template_env.filters['regex_replace'] = models.regex_replace
-    template_env.tests['is_not_defined'] = models.is_not_defined
-    template_env.tests['is_defined'] = models.is_defined
     template_env.tests['has_default'] = models.has_default
     return template_env
 
