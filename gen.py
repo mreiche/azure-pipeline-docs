@@ -9,7 +9,7 @@ from jinja2 import TemplateError
 
 from lib import models
 from lib.log import logging
-from lib.models import Spec, regex_replace
+from lib.models import Spec
 
 __file = Path(__file__)
 LOGGER = logging.getLogger(__file.name)
@@ -52,6 +52,7 @@ def setup_jina_env():
     template_env.filters['regex_replace'] = models.regex_replace
     template_env.tests['is_not_defined'] = models.is_not_defined
     template_env.tests['is_defined'] = models.is_defined
+    template_env.tests['has_default'] = models.has_default
     return template_env
 
 def read_files(input_args: list[str]):

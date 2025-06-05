@@ -88,3 +88,4 @@ def test_rendering_structured():
         file_content = file.read()
         assert "required: bool" in file_content
         assert "defaultNone: string" in file_content
+        assert "emptyStringDefault: string" not in file_content

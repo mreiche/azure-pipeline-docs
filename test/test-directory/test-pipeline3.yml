@@ -4,6 +4,9 @@ parameters:
   - name: defaultNone
     type: string
     default: None
+  - name: emptyStringDefault
+    default: ""
+    type: string
 
 stages:
   - stage: StructureTest

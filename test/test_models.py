@@ -47,7 +47,7 @@ def test_parameters_from_dict():
         (1, True),
         (None, False),
         (False, True),
-        ("", False),
+        ("", True),
         ("NoNe", False)
     ]
 )
