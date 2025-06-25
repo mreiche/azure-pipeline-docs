@@ -89,3 +89,6 @@ def test_rendering_structured():
         assert "required: bool" in file_content
         assert "defaultNone: string" not in file_content
         assert "emptyStringDefault: string" not in file_content
+        assert "Included Stage" in file_content
+
+    assert "WARNING:lib.models:Skip reading template from repo reference 'stage-template.yml@repoReference' in template: test-directory/test-pipeline3.yml" in ret.stderr

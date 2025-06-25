@@ -10,3 +10,5 @@ parameters:
 
 stages:
   - stage: StructureTest
+  - template: stage-template.yml
+  - template: stage-template.yml@repoReference
