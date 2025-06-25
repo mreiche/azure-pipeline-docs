@@ -1,3 +1,5 @@
+[![Tests Status](https://github.com/mreiche/azure-pipeline-docs/actions/workflows/test-and-build.yml/badge.svg)](https://github.com/mreiche/owasp-dependency-track-cli/actions/workflows/test-and-build.yml)
+
 # Azure Pipeline docs
 
 Generate documentation from *Azure Pipeline* files.
