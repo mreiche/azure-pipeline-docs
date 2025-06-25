@@ -143,8 +143,12 @@ class Spec:
                 items[i] = item
                 item.items = self.load_items(item.items, hierarchy, path + [item])
             elif "template" in item:
-                item = self.load_template(item)
-                items[i] = item
+                template_def = item["template"]
+                if "@" in template_def:
+                    LOGGER.warning(f"Skip reading template from repo reference '{template_def}' in template: {self.relative_path}")
+                else:
+                    item = self.load_template(item)
+                    items[i] = item
             elif sub_level and sub_level in item:
                 item[sub_level] = self.load_items(item[sub_level], sub_hierarchy, path + [item])
 
