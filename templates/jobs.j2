@@ -11,5 +11,10 @@
 {% endwith %}
 {% else %}
 {{ '    ' * level }}1. *Job*: {{ (job.displayName if "displayName" in job else job.job) | regex_replace('(\${{?.+}})', '`\\1`') }}
+    {% if with_steps %}
+    {% with steps=job.steps, level=level+1 %}
+    {% include "steps.j2" %}
+    {% endwith %}
+    {% endif %}
 {% endif %}
 {% endfor %}
