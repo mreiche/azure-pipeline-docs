@@ -92,3 +92,23 @@ def test_rendering_structured():
         assert "Included Stage" in file_content
 
     assert "WARNING:lib.models:Skip reading template from repo reference 'stage-template.yml@repoReference' in template: test-directory/test-pipeline3.yml" in ret.stderr
+
+
+def test_rendering_job_template():
+    output_dir = __base_dir / "out4"
+    clear_dir(output_dir)
+
+    test_env = os.environ.copy()
+    test_env["OUTPUT_DIR"] = str(output_dir)
+    ret = subprocess.run(
+        ["python", __base_dir / "../gen.py", __base_dir / "test-job-template.yml"],
+        capture_output=True,
+        text=True,
+        env=test_env
+    )
+    assert ret.returncode == 0
+    assert ret.stderr == "INFO:gen.py:1 files generated\n", ret.stderr
+
+    with open(output_dir / "test-job-template.md", "r") as file:
+        file_content = file.read()
+        assert "First Step" in file_content

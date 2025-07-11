@@ -15,7 +15,7 @@
 
 {% if spec.doc.jobs %}
 ## Jobs
-{% with jobs=spec.doc.jobs, level=0 %}
+{% with jobs=spec.doc.jobs, level=0, with_steps=true %}
 {% include 'jobs.j2' %}
 {% endwith %}
 {% endif %}
