@@ -1,0 +1,19 @@
+{% if (stages | first).__class__.__name__ not in ('Template', 'Condition') %}
+{{ '    ' * level }}```mermaid
+{{ '    ' * level }}---
+{{ '    ' * level }}config:
+{{ '    ' * level }}---
+{{ '    ' * level }}kanban
+{% for stage in stages -%}
+    {% if 'Template' in stage.__class__.__name__ %}
+        {% for stage in stage.spec.doc.stages %}
+{{ '    ' * level }}    {{ (stage.displayName if "displayName" in stage else stage.stage) | regex_replace('(\${{.+}})', '`\\1`') }}
+        {% endfor %}
+    {% endif %}
+{{ '    ' * level }}    {{ (stage.displayName if "displayName" in stage else stage.stage) | regex_replace('(\${{.+}})', '`\\1`') }}
+    {% for job in stage.jobs %}
+{{ '    ' * level }}        {{ (job.displayName if "displayName" in job else job.job) | regex_replace('(\${{?.+}})', '`\\1`') }}
+    {% endfor %}
+{%- endfor %}
+{{ '    ' * level }}```
+{% endif %}

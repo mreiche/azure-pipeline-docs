@@ -1,4 +1,4 @@
 ruamel.yaml
 jinja2
 is_empty
-tinystream
+tinystream==0.1.16

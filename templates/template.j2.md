@@ -7,6 +7,14 @@
 {% endif %}
 
 {% if spec.doc.stages %}
+
+{% if spec.diagram %}
+## Diagram
+{% with spec=spec %}
+{% include "diagram.j2" %}
+{% endwith %}
+{% endif %}
+
 ## Workflow
 {% with stages=spec.doc.stages, level = 0 %}
 {% include 'stages.j2' %}

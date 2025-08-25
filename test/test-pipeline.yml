@@ -7,6 +7,7 @@
 # codeBlock:
 #     withIndents: true
 # ```
+# diagram: pr_build, pre_qa, build, post_qa, provide
 
 parameters:
   - name: paramWithValues
@@ -49,8 +50,6 @@ stages:
               echo Using ${{ variables.buildVersion }}
             displayName: Showing version to use
 
-          # SemVer: in case of tag builds only determine the version (= Tag name) and do not build and publish again
-          # The complete build and publish is done during the release itself from main / develop
           - ${{ if or(eq(parameters.useSemanticVersion, false), and(not(startsWith(variables['Build.SourceBranch'], 'refs/tags/')), eq(parameters.useSemanticVersion, true))) }}:
 
             - task: Docker@2

@@ -40,6 +40,15 @@ class Spec:
         self.__file = file
         self.__parent = parent
         self.__doc = self.__load()
+        self.__load_meta_settings()
+
+    def __load_meta_settings(self):
+        #comments = Stream(self.__doc).map_key("ca")
+        comments = self.__doc.ca
+        for comment in comments:
+            pass
+            #all_comments = comments.collect()
+        pass
 
     @property
     def file(self) -> Path:
