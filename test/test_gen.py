@@ -112,3 +112,4 @@ def test_rendering_job_template():
     with open(output_dir / "test-job-template.md", "r") as file:
         file_content = file.read()
         assert "First Step" in file_content
+        assert "parameters: {}" in file_content

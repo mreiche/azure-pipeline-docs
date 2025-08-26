@@ -2,10 +2,11 @@
 ```yaml
 - template: {{ spec.relative_path }}
   {% set required_params = spec.doc.parameters | reject('has_default') | list %}
-  {% if required_params | length > 0 %}
-  parameters:
+  parameters: {% if required_params | length > 0 %}
+
     {% for param in required_params %}
     {{ param.name | indent(4) }}: {{ param.type }}
     {% endfor %}
-  {% endif %}
+    {% else %}{}
+    {% endif %}
 ```
