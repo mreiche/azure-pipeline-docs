@@ -39,7 +39,7 @@ jobs:
         env:
           PYTHONPATH: "."
         run: |
-          pytest --junitxml=./test-results/tests.xml --cov=./owasp_dt_cli ./test
+          pytest --junitxml=./test-results/tests.xml --cov=./lib ./test
 
       - name: Publish test results
         uses: EnricoMi/publish-unit-test-result-action@v2
