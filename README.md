@@ -1,3 +1,4 @@
+[![Code Coverage Status](https://codecov.io/github/mreiche/azure-pipeline-docs/branch/main/graph/badge.svg)](https://app.codecov.io/github/mreiche/azure-pipeline-docs)
 [![Tests Status](https://github.com/mreiche/azure-pipeline-docs/actions/workflows/test-and-build.yml/badge.svg)](https://github.com/mreiche/owasp-dependency-track-cli/actions/workflows/test-and-build.yml)
 
 # Azure Pipeline docs
