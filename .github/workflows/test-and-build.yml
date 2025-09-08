@@ -7,22 +7,8 @@ env:
 on:
   push:
     branches: [ "main" ]
-    paths:
-      - .github/workflows/test-and-build.yml
-      - lib/**
-      - templates/**
-      - gen.py
-      - Dockerfile
-      - requirements.txt
   pull_request:
     branches: [ "main" ]
-    paths:
-      - .github/workflows/test-and-build.yml
-      - lib/**
-      - templates/**
-      - gen.py
-      - Dockerfile
-      - requirements.txt
   workflow_dispatch:
 
 permissions:
@@ -35,46 +21,46 @@ jobs:
   test-and-build:
     name: "Test and build"
     runs-on: ubuntu-latest
-    permissions: write-all  # Required for pushing images
+    permissions: write-all
     steps:
       - uses: actions/checkout@v4
+
       - name: Set up Python
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v5
         with:
           python-version: "3.13"
-          #cache: 'pip'
-      - run: pip install -r requirements.txt -r test-requirements.txt
+          cache: "pip"
+          cache-dependency-path: |
+            requirements*.txt
+
+      - run: pip install -r requirements.txt -r requirements-dev.txt
+
       - name: Run tests
         env:
           PYTHONPATH: "."
         run: |
-          pytest --junitxml=test-results/tests.xml test
+          pytest --junitxml=./test-results/tests.xml --cov=./owasp_dt_cli ./test
+
       - name: Publish test results
         uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
         with:
           files: |
             test-results/**/*.xml
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v5
+
+      - name: Generate coverage report
+        run: coverage xml
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        continue-on-error: true
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-      - name: Log in to the Container registry
-        uses: docker/login-action@v3
+          #fail_ci_if_error: true
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage.xml
+          verbose: true
+
+      - uses: ./.github/actions/build-container
         with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
+          user: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      - name: Build and push
-        uses: docker/build-push-action@v6
-        with:
-          platforms: linux/amd64,linux/arm64
-          context: .
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
